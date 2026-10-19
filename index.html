@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#090a0c">
+  <meta name="robots" content="noindex,nofollow">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RR Garage">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="RR Garage">
+
+  <title>RR Garage Workshop</title>
+
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="./favicon-64.png">
+
+  <style>
+    :root {
+      --bg:#090a0c;
+      --panel:#14171b;
+      --line:rgba(255,255,255,.09);
+      --text:#f7f7f8;
+      --muted:#9198a1;
+      --red:#e12632;
+    }
+
+    * {
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,
+    body {
+      margin:0;
+      width:100%;
+      height:100%;
+      background:var(--bg);
+      overflow:hidden;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "SF Pro Text",
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    }
+
+    body {
+      min-height:100vh;
+      min-height:100dvh;
+    }
+
+    #workshop {
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      height:100dvh;
+      border:0;
+      background:var(--bg);
+      opacity:0;
+      transition:opacity .24s ease;
+    }
+
+    #workshop.ready {
+      opacity:1;
+    }
+
+    #splash {
+      position:fixed;
+      inset:0;
+      z-index:20;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:
+        max(24px,env(safe-area-inset-top))
+        24px
+        max(24px,env(safe-area-inset-bottom));
+      background:
+        radial-gradient(
+          circle at 50% 35%,
+          rgba(225,38,50,.14),
+          transparent 34%
+        ),
+        linear-gradient(
+          180deg,
+          #111318 0%,
+          #08090b 100%
+        );
+      color:var(--text);
+      text-align:center;
+      transition:
+        opacity .3s ease,
+        visibility .3s ease;
+    }
+
+    #splash.hide {
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+    }
+
+    .logo {
+      width:min(72vw,280px);
+      height:auto;
+      max-height:150px;
+      object-fit:contain;
+      margin-bottom:19px;
+      filter:
+        drop-shadow(0 18px 32px rgba(0,0,0,.4));
+      animation:logoIn .48s ease both;
+    }
+
+    .title {
+      margin:0;
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:-.035em;
+      animation:fadeUp .42s ease .08s both;
+    }
+
+    .sub {
+      margin:7px 0 22px;
+      color:var(--muted);
+      font-size:12px;
+      animation:fadeUp .42s ease .15s both;
+    }
+
+    .loader {
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      border:3px solid rgba(225,38,50,.16);
+      border-top-color:var(--red);
+      animation:
+        spin .72s linear infinite,
+        fadeIn .35s ease .2s both;
+    }
+
+    .loadingText {
+      margin-top:13px;
+      color:#d5d8dc;
+      font-size:11px;
+      animation:fadeIn .35s ease .25s both;
+    }
+
+    #fallback {
+      position:fixed;
+      inset:0;
+      z-index:30;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:
+        max(24px,env(safe-area-inset-top))
+        20px
+        max(24px,env(safe-area-inset-bottom));
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    #fallback.show {
+      display:flex;
+    }
+
+    .fallbackCard {
+      width:min(390px,100%);
+      padding:23px;
+      border:1px solid var(--line);
+      border-radius:20px;
+      background:linear-gradient(180deg,#171a1f,#101215);
+      text-align:center;
+      box-shadow:0 25px 70px rgba(0,0,0,.38);
+    }
+
+    .fallbackCard img {
+      width:155px;
+      height:auto;
+      margin-bottom:15px;
+    }
+
+    .fallbackCard h2 {
+      margin:0 0 7px;
+      font-size:19px;
+    }
+
+    .fallbackCard p {
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+    }
+
+    .fallbackCard a {
+      min-height:48px;
+      margin-top:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:13px;
+      background:linear-gradient(180deg,#e6323d,#c9202a);
+      color:#fff;
+      font-size:12px;
+      font-weight:850;
+      text-decoration:none;
+    }
+
+    @keyframes spin {
+      to { transform:rotate(360deg); }
+    }
+
+    @keyframes logoIn {
+      from {
+        opacity:0;
+        transform:translateY(8px) scale(.975);
+      }
+      to {
+        opacity:1;
+        transform:none;
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity:0;
+        transform:translateY(5px);
+      }
+      to {
+        opacity:1;
+        transform:none;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity:0; }
+      to { opacity:1; }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      * {
+        animation-duration:.001ms!important;
+        transition-duration:.001ms!important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <iframe
+    id="workshop"
+    title="RR Garage Workshop"
+    allow="clipboard-read; clipboard-write; web-share; fullscreen"
+    referrerpolicy="strict-origin-when-cross-origin"
+  ></iframe>
+
+  <div id="splash">
+    <img
+      class="logo"
+      src="./icon-512.png"
+      alt="RR Garage"
+    >
+
+    <h1 class="title">RR Garage Workshop</h1>
+
+    <div class="sub">
+      Cargando sistema de taller...
+    </div>
+
+    <div class="loader" aria-hidden="true"></div>
+
+    <div id="loadingText" class="loadingText">
+      Conectando...
+    </div>
+  </div>
+
+  <div id="fallback">
+    <div class="fallbackCard">
+      <img src="./icon-512.png" alt="RR Garage">
+
+      <h2>RR Garage Workshop</h2>
+
+      <p>
+        No fue posible mostrar el sistema dentro de esta ventana.
+        Puedes abrir la aplicación directamente.
+      </p>
+
+      <a
+        id="fallbackLink"
+        href="https://script.google.com/macros/s/AKfycbybNlUFW0yJPejxwKuFhHdEQogrgGvg_JR2GAv_E6OcQ8cydz2-Nn-hclBh6vBhW7B5xw/exec"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Abrir RR Garage
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const APP_URL =
+      "https://script.google.com/macros/s/AKfycbybNlUFW0yJPejxwKuFhHdEQogrgGvg_JR2GAv_E6OcQ8cydz2-Nn-hclBh6vBhW7B5xw/exec";
+
+    const frame =
+      document.getElementById('workshop');
+
+    const splash =
+      document.getElementById('splash');
+
+    const fallback =
+      document.getElementById('fallback');
+
+    const loadingText =
+      document.getElementById('loadingText');
+
+    const minSplashMs =
+      650;
+
+    const startedAt =
+      Date.now();
+
+    let revealed =
+      false;
+
+    let loaded =
+      false;
+
+
+    function revealApp() {
+      if (revealed) return;
+
+      revealed = true;
+
+      const elapsed =
+        Date.now() - startedAt;
+
+      const wait =
+        Math.max(
+          0,
+          minSplashMs - elapsed
+        );
+
+      setTimeout(
+        () => {
+          frame.classList.add('ready');
+
+          requestAnimationFrame(
+            () => splash.classList.add('hide')
+          );
+        },
+        wait
+      );
+    }
+
+
+    function showFallback() {
+      splash.classList.add('hide');
+      frame.style.display = 'none';
+      fallback.classList.add('show');
+    }
+
+
+    frame.addEventListener(
+      'load',
+      () => {
+        loaded = true;
+        loadingText.textContent =
+          'RR Garage listo';
+        revealApp();
+      }
+    );
+
+
+    frame.addEventListener(
+      'error',
+      showFallback
+    );
+
+
+    window.addEventListener(
+      'offline',
+      () => {
+        loadingText.textContent =
+          'Sin conexión a internet';
+      }
+    );
+
+
+    window.addEventListener(
+      'online',
+      () => {
+        if (!loaded) {
+          loadingText.textContent =
+            'Conectando...';
+        }
+      }
+    );
+
+
+    frame.src =
+      APP_URL;
+
+
+    // Evita que un navegador lento deje el splash visible para siempre.
+    setTimeout(
+      () => {
+        if (!revealed) {
+          loadingText.textContent =
+            'Abriendo RR Garage...';
+
+          revealApp();
+        }
+      },
+      6500
+    );
+  </script>
+
+</body>
+</html>
