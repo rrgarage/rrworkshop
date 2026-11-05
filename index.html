@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090a0c">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RR Garage">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>RR Garage Workshop</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="./favicon-64.png">
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;height:100%;background:#090a0c;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+    body{min-height:100dvh}
+    #app{position:fixed;inset:0;width:100%;height:100dvh;border:0;background:#090a0c;opacity:0;transition:opacity .22s ease}
+    #app.ready{opacity:1}
+    #splash{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:max(24px,env(safe-area-inset-top)) 24px max(24px,env(safe-area-inset-bottom));background:radial-gradient(circle at 50% 35%,rgba(225,38,50,.14),transparent 34%),linear-gradient(180deg,#111318 0%,#08090b 100%);color:#fff;text-align:center;transition:opacity .28s ease,visibility .28s ease}
+    #splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+    #splash img{width:min(68vw,250px);height:auto;margin-bottom:18px}
+    #splash b{font-size:20px}
+    #splash span{margin-top:7px;color:#949ba4;font-size:11px}
+    .loader{width:36px;height:36px;margin-top:18px;border-radius:50%;border:3px solid rgba(225,38,50,.18);border-top-color:#e12632;animation:spin .72s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+  <iframe id="app" title="RR Garage Workshop" allow="clipboard-read; clipboard-write; web-share; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <div id="splash">
+    <img src="./icon-512.png" alt="RR Garage">
+    <b>RR Garage Workshop</b>
+    <span>Cargando sistema...</span>
+    <div class="loader"></div>
+  </div>
+  <script>
+    const APP_URL = "https://script.google.com/macros/s/AKfycbwFiXwzky8T5VxTkumcTibKNWE5l-i_MP_F2Qc_4c-XCBc00u-Mpbmjz1z61Hv5JrSO/exec";
+    const app = document.getElementById('app');
+    const splash = document.getElementById('splash');
+
+    app.addEventListener('load', () => {
+      app.classList.add('ready');
+      setTimeout(() => splash.classList.add('hide'), 350);
+    });
+
+    app.src = APP_URL;
+  </script>
+</body>
+</html>
